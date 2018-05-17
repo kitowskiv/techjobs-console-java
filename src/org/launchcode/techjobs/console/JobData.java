@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.*;
+
 
 /**
  * Created by LaunchCode
@@ -29,7 +31,6 @@ public class JobData {
      * @return List of all of the values of the given field
      */
     public static ArrayList<String> findAll(String field) {
-
         // load data, if not already loaded
         loadData();
 
@@ -43,6 +44,7 @@ public class JobData {
             }
         }
 
+        Collections.sort(values);
         return values;
     }
 
@@ -51,7 +53,9 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+        ArrayList allJobsReplica = new ArrayList(allJobs);
+
+        return allJobsReplica;
     }
 
     /**
@@ -74,14 +78,40 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
-            if (aValue.contains(value)) {
+            if (aValue.contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
 
         return jobs;
+    }
+
+    public static ArrayList<HashMap<String, String>> findByValue(String value) {
+
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (HashMap<String, String> row : allJobs) {
+
+            for (String column : row.values()) {
+
+                if (column.toLowerCase().contains(value.toLowerCase())) {
+
+                    jobs.add(row);
+
+                    break;
+                }
+            }
+        }
+
+        return jobs;
+
+
+
+
     }
 
     /**
@@ -120,7 +150,7 @@ public class JobData {
             isDataLoaded = true;
 
         } catch (IOException e) {
-            System.out.println("Failed to load job data");
+            System.out.println("The job data failed to load");
             e.printStackTrace();
         }
     }
